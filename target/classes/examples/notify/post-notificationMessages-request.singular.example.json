@@ -1,0 +1,6 @@
+ {
+      		"senderPartyId" : "Party123",
+			"recipientPartyId" : "Party321",
+			"channel" : "default",
+			"message" : "Message"
+}

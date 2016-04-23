@@ -1,0 +1,16 @@
+#
+# --= Change Log =--
+# VERSION 1.0:
+# 2015-08-24 - mdebarros - initial version created
+# 2015-08-25 - mdebarros - first draft
+# 2016-02-04 - mdebarros - Split resourceTypes into seperate files
+#
+queryParameters:
+  startPage:
+    description: The starting page for the search
+    required: true
+    type: integer
+  numRecords:
+    description: The number of records to return within the page
+    required: true
+    type: integer

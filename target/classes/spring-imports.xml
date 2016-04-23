@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<spring:beans>
+		<spring:import resource="classpath:bvb-mule-lib-config.xml" />
+		<spring:import resource="classpath:bvb-mule-lib-config-headers.xml" />
+		<spring:import resource="classpath:bvb-mule-lib-ping.xml" />
+		<spring:import resource="classpath:bvb-mule-lib-oauth2-tokens.xml" />
+		<spring:import resource="classpath:bvb-mule-lib-oauth2-validation.xml" />
+		<spring:import resource="classpath:bvb-mule-lib-audit.xml" />
+		<spring:import resource="classpath:bvb-mule-lib-exceptions.xml" />
+	</spring:beans>
+
+</mule>

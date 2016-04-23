@@ -1,0 +1,88 @@
+#
+# --= Change Log =--
+# VERSION 1.0:
+# 2016-02-04 smndana - initial version created
+# 2016-02-04 smndana - first draft
+# 2016-02-05 mdebarros - Added correlation ID and timestamp, Updated timestamps to include milliseconds 
+#
+api-message-id:
+  description: |
+    Required: A 128-bit Globally Unique Identifier (GUID) identifying for the Message Identifier
+  type: string
+  required: true
+  #minLength: 36
+  #maxLength: 36
+  pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$ # UUID (GUID) v4 standard
+  example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+api-related-id:
+  description: |
+    Optional: A 128-bit Globally Unique Identifier (GUID) identifying for the related request Message ID
+  type: string
+  required: false
+  #minLength: 36
+  #maxLength: 36
+  pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$ # UUID (GUID) v4 standard
+  example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+api-transaction-id:
+  description: |
+    Required: A 128-bit Globally Unique Identifier (GUID) identifying for the transport transaction Identifier
+  type: string
+  required: true
+  #minLength: 36
+  #maxLength: 36
+  pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$ # UUID (GUID) v4 standard
+  example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+api-cor-id:
+  description: |
+    Required: A 128-bit Globally Unique Identifier (GUID) identifying for the business correlation Identifier
+  type: string
+  required: false
+  #minLength: 36
+  #maxLength: 36
+  pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$ # UUID (GUID) v4 standard
+  example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+api-transaction-timestamp:
+  description: |
+    Required: The date and time of the transaction in yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+  type: string
+  required: true
+  pattern: ^(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2}).(\d{3})(((\+|-)(\d{2})\:(\d{2}))|(Z))$
+  example: !!str 2015-08-18T06:36:40.000+00:00
+api-message-timestamp:
+  description: |
+    Required: The date and time of the message in yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+  type: string
+  required: true
+  pattern: ^(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2}).(\d{3})(((\+|-)(\d{2})\:(\d{2}))|(Z))$
+  example: !!str 2015-08-18T06:36:40.000+00:00
+api-cor-timestamp:
+  description: |
+    Required: The date and time of the correlation in yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+  type: string
+  required: false
+  pattern: ^(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2}).(\d{3})(((\+|-)(\d{2})\:(\d{2}))|(Z))$
+  example: !!str 2015-08-18T06:36:40.000+00:00
+api-cache-key:
+  description: |
+    Optional: Key representing the cached content within the body. Recommended that a SHA512/256 is used.
+  type: string
+  required: false
+  example: c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a
+api-lang:
+  description: |
+    Required: language of the API User based on ISO 639-1: two-letter codes
+  type: string
+  required: true
+  example: en
+api-country:
+  description: |
+    Required: language of the API User based on ISO 3166-1 alpha-2 – two-letter country code
+  type: string
+  required: true
+  example: za
+api-organisation:
+  description: |
+    Required: organisation identifier
+  type: string
+  required: true
+  example: bvb

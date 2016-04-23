@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+<context:property-placeholder location="mule-exception.properties"/>
+    <asynchronous-processing-strategy name="Asynchronous_Processing_Strategy" maxThreads="2048" minThreads="64" threadTTL="240000" poolExhaustedAction="WAIT" threadWaitTimeout="120000" maxBufferSize="10240" doc:name="Asynchronous Processing Strategy"/>
+    
+    <http:request-config name="HTTP_Party_Configuration" host="${http.party.host}" port="${http.party.port}" basePath="${http.party.base.path}" connectionIdleTimeout="${http.party.timeout.connection}" responseTimeout="${http.party.timeout}" doc:name="HTTP Party Request Configuration"/>
+    <http:request-config name="HTTP_Interaction_Configuration" host="${http.interact.host}" port="${http.interact.port}" basePath="${http.interact.base.path}" connectionIdleTimeout="${http.interact.timeout.connection}" responseTimeout="${http.interact.timeout}" doc:name="HTTP Interaction Request Configuration"/>  
+    <http:request-config name="HTTP_SMS_Configuration1" host="${http.sms.host}" port="${http.sms.port}" basePath="${http.sms.base.path}" connectionIdleTimeout="${http.sms.timeout.connection}" responseTimeout="${http.sms.timeout}" doc:name="HTTP SMS Request Configuration" tlsContext-ref="TLS" protocol="HTTPS"/>  
+    
+    <tls:context name="TLS" doc:name="TLS Context">
+        <tls:trust-store path="${http.sms.tls.truststore.path}" password="${http.sms.tls.truststore.password}"/>
+    </tls:context>
+    
+    <configuration defaultExceptionStrategy-ref="defaultExceptionStrategy" doc:name="Configuration">
+        <http:config useTransportForUris="false"/>
+    </configuration>
+
+</mule>

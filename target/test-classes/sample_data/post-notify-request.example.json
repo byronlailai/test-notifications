@@ -1,0 +1,9 @@
+{
+  	"messages": [
+	      {
+			"recipientPartyId" : "471bd1f7-19f9-4db8-a291-45904155c356",
+			"channel" : "sms",
+			"message" : "BVB System Test Message"
+	      }
+  	]
+}

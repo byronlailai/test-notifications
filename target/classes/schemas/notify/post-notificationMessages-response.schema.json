@@ -1,0 +1,11 @@
+{
+    "$schema" : "http://json-schema.org/draft-04/schema#",
+    "title" : "notificationResponse",
+    "description" : "Defines a BVB notification response",
+    "type": "object",
+    "properties": {
+        "result": { 
+          "type" : "string"
+        }
+    }
+}

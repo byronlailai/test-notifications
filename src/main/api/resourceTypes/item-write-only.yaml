@@ -1,0 +1,66 @@
+#
+# --= Change Log =--
+# VERSION 1.0:
+# 2015-08-24 - mdebarros - initial version created
+# 2015-08-25 - mdebarros - first draft
+# 2015-08-26 - mdebarros - added meta-data to headers & fixed date-time regex for the headers
+# 2015-09-17 - mdebarros - added api-organisation identifier to headers as required
+# 2015-10-30 - mdebarros - removed the body request from all delete operations
+# 2015-10-30 - mdebarros - added a item-update-only
+# 2015-11-04 - mdebarros - Updated dateTime regex for headers
+# 2015-11-04 - mdebarros - Added the !!str in front of dateTime example strings as YAML spec parses dates automatically
+# 2015-11-06 - mdebarros - Update Post operations error code from 404 to 409
+# 2016-02-04 - mdebarros - Split resourceTypes into seperate files
+# 2016-02-04 - mdebarros - Added common header include
+#
+description: Defines an individual item to be created. <<defined-description>>
+post:
+  description: Write a <<resourcePathName|!singularize>> record. <<defined-post-description>>
+  headers: !include common/headers.yaml
+  body:
+    application/json:
+      schema: |
+        <<defined-post-request-schema>>
+      example: |
+        <<defined-post-request-example>>
+  responses:
+    201:
+      description: |
+        The request has been fulfilled and resulted in a new resource being created.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-response-schema>>
+          example: |
+            <<defined-post-response-example>>
+    400:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>
+    409:
+      description: |
+        The request could not be completed due to a conflict with the current state of the resource.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>
+    500:
+      description: |
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>

@@ -1,0 +1,16 @@
+#
+# --= Change Log =--
+# VERSION 1.0:
+# 2015-08-24 - mdebarros - initial version created
+# 2015-08-25 - mdebarros - first draft
+# 2016-02-04 - mdebarros - Split resourceTypes into seperate files
+#
+queryParameters:
+  dateFrom:
+    description: The start of the date range
+    required: true
+    type: date
+  dateTo:
+    description: The end of the date range
+    required: true
+    type: date

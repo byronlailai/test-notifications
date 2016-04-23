@@ -1,0 +1,51 @@
+description: Defines an individual item to be created. <<defined-description>>
+post:
+  description: Write a <<resourcePathName|!singularize>> record. <<defined-post-description>>
+  headers: !include common/headers.yaml
+  body:
+    application/json:
+      schema: |
+        <<defined-post-request-schema>>
+      example: |
+        <<defined-post-request-example>>
+  responses:
+    200:
+      description: |
+        The request has been fulfilled and resulted in a new resource being created.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-response-schema>>
+          example: |
+            <<defined-post-response-example>>
+    400:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception400-schema>>
+          example: |
+            <<defined-post-exception400-example>>
+    404:
+      description: |
+        The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception404-schema>>
+          example: |
+            <<defined-post-exception404-example>>
+    500:
+      description: |
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception500-schema>>
+          example: |
+            <<defined-post-exception500-example>>

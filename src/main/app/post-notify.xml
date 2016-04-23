@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <flow name="post-notifyFlow">
+        <choice doc:name="check enabled master">
+            <when expression="#[Boolean.valueOf('${notifications.master.enabled}')]">
+                <choice doc:name="check channel config">
+                    <when expression="#[!Boolean.valueOf('${notifications.master.enabled}') || !Boolean.valueOf('${notifications.sms.enabled}') || !Boolean.valueOf('${notifications.email.enabled}') || !Boolean.valueOf('${notifications.twitter.enabled}') || !Boolean.valueOf('${notifications.facebook.enabled}') || !Boolean.valueOf('${notifications.linkedIn.enabled}') || !Boolean.valueOf('${notifications.applePush.enabled}')]">
+                        <logger message="Warning: At least one notification channel is specifically disabled through configuration. Ignore if this is intended." level="WARN" doc:name="warn one or more channels disabled"/>
+                    </when>
+                    <otherwise>
+                        <logger message="No channels are disabled through configuration" level="DEBUG" doc:name="debug no channels disabled"/>
+                    </otherwise>
+                </choice>
+                <async processingStrategy="Asynchronous_Processing_Strategy" doc:name="asynchronously process notifications through channels">
+                    <foreach collection="#[json:messages]" doc:name="foreach message">
+                        <set-variable variableName="message" value="#[json:message]" doc:name="set message"/>
+                        <set-variable variableName="channel" value="#[json:channel]" doc:name="set channel"/>
+                        <set-variable variableName="channels" value="#[new java.util.LinkedHashMap();]" doc:name="reset channels"/>
+                        <set-variable variableName="partyId" value="#[json:recipientPartyId]" doc:name="set partyId"/>
+                        <flow-ref name="get-party-preferences" doc:name="get-party-preferences"/>
+                        <logger message="#[payload]" level="DEBUG" doc:name="log response"/>
+                        <choice doc:name="check party pref result">
+                            <when expression="#[message.inboundProperties['http.status'] == &quot;200&quot;]">
+                                <choice doc:name="determine channels">
+                                    <when expression="#[flowVars['channel'] != &quot;default&quot;]">
+                                        <logger message="Not looking up prefered channels as a channel was specified by the client." level="DEBUG" doc:name="debug channel specified"/>
+                                        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="json to hashMap"/>
+                                        <foreach collection="#[payload['party']['partyInfo']['partyPref']['communicationList']]" doc:name="foreach communication element">
+                                            <choice doc:name="get notification values">
+                                                <when expression="#[payload['communication']['communicationType'] == &quot;notifications&quot;]">
+                                                    <foreach collection="#[payload.communication.communicationData]" doc:name="foreach communicationData element">
+                                                        <choice doc:name="match channel">
+                                                            <when expression="#[payload.communicationChannel.equalsIgnoreCase(flowVars.channel)]">
+                                                                <expression-component doc:name="add value for client specified channel"><![CDATA[java.util.LinkedHashMap cnls = flowVars.channels : java.util.LinkedHashMap;
+cnls.put(payload.communicationValue, flowVars.channel);
+flowVars.channels = cnls;]]></expression-component>
+                                                            </when>
+                                                            <otherwise>
+                                                                <logger message="Searching for notification value for client specified channel..." level="DEBUG" doc:name="debug not specified channel"/>
+                                                            </otherwise>
+                                                        </choice>
+                                                    </foreach>
+                                                </when>
+                                                <otherwise>
+                                                    <logger message="Searching for notification data..." level="DEBUG" doc:name="debug not notification element"/>
+                                                </otherwise>
+                                            </choice>
+                                        </foreach>
+                                    </when>
+                                    <otherwise>
+                                        <flow-ref name="defaultChannelArray" doc:name="defaultChannelArray"/>
+                                        <choice doc:name="check for channels">
+                                            <when expression="#[(flowVars.channels : java.util.LinkedHashMap).isEmpty() != true]">
+                                                <logger message="Notifying through at least one channel (default channel checkpoint)" level="DEBUG" doc:name="debug channels found"/>
+                                            </when>
+                                            <otherwise>
+                                                <logger message="Client specified channel as 'default' but no preferred channels could be determined for PartyId: #[flowVars.partyId] . Defaulting to the SMS channel and attempting to get a value..." level="INFO" doc:name="info no channels"/>
+                                                <set-variable variableName="channel" value="sms" doc:name="set channel sms"/>
+                                                <foreach collection="#[payload['party']['partyInfo']['partyPref']['communicationList']]" doc:name="foreach communication element">
+                                                    <choice doc:name="get notification values">
+                                                        <when expression="#[payload['communication']['communicationType'] == &quot;notifications&quot;]">
+                                                            <foreach collection="#[payload.communication.communicationData]" doc:name="foreach communicationData element">
+                                                                <choice doc:name="match channel">
+                                                                    <when expression="#[payload.communicationChannel.equalsIgnoreCase(flowVars.channel)]">
+                                                                        <expression-component doc:name="add value for sms channel"><![CDATA[java.util.LinkedHashMap cnls = flowVars.channels : java.util.LinkedHashMap;
+cnls.put(payload.communicationValue, flowVars.channel);
+flowVars.channels = cnls;]]></expression-component>
+                                                                    </when>
+                                                                    <otherwise>
+                                                                        <logger message="Searching for notification value for default sms channel..." level="DEBUG" doc:name="debug not specified channel"/>
+                                                                    </otherwise>
+                                                                </choice>
+                                                            </foreach>
+                                                        </when>
+                                                        <otherwise>
+                                                            <logger message="Searching for notification data..." level="DEBUG" doc:name="debug not notification element"/>
+                                                        </otherwise>
+                                                    </choice>
+                                                </foreach>
+                                            </otherwise>
+                                        </choice>
+                                    </otherwise>
+                                </choice>
+                                <choice doc:name="check for channels">
+                                    <when expression="#[(flowVars.channels : java.util.LinkedHashMap).isEmpty() != true]">
+                                        <logger message="Notifying through at least one channel (final checkpoint)" level="DEBUG" doc:name="debug channels found"/>
+                                        <foreach collection="flowVars.channels : java.util.LinkedHashMap" doc:name="foreach channel">
+                                            <set-variable variableName="notificationAddress" value="#[(new ArrayList((flowVars.channels : java.util.LinkedHashMap).keySet())).get(counter - 1)]" doc:name="set notification address"/>
+                                            <choice doc:name="route channel">
+                                                <when expression="#[payload == &quot;email&quot;]">
+                                                    <enricher source="#[payload]" target="#[flowVars.success]" doc:name="enrich success var">
+                                                        <flow-ref name="notify-email" doc:name="notify-email"/>
+                                                    </enricher>
+                                                </when>
+                                                <when expression="#[payload == &quot;twitter&quot;]">
+                                                    <enricher source="#[payload]" target="#[flowVars.success]" doc:name="enrich success var">
+                                                        <flow-ref name="notify-twitter" doc:name="notify-twitter"/>
+                                                    </enricher>
+                                                </when>
+                                                <when expression="#[payload == &quot;facebook&quot;]">
+                                                    <enricher source="#[payload]" target="#[flowVars.success]" doc:name="enrich success var">
+                                                        <flow-ref name="notify-facebook" doc:name="notify-facebook"/>
+                                                    </enricher>
+                                                </when>
+                                                <when expression="#[payload == &quot;linkedin&quot;]">
+                                                    <enricher source="#[payload]" target="#[flowVars.success]" doc:name="enrich success var">
+                                                        <flow-ref name="notify-linkedIn" doc:name="notify-linkedIn"/>
+                                                    </enricher>
+                                                </when>
+                                                <when expression="#[payload == &quot;applePush&quot;]">
+                                                    <enricher source="#[payload]" target="#[flowVars.success]" doc:name="enrich success var">
+                                                        <flow-ref name="notify-apple-push" doc:name="notify-apple-push"/>
+                                                    </enricher>
+                                                </when>
+                                                <when expression="#[payload == &quot;sms&quot;]">
+                                                    <enricher source="#[payload]" target="#[flowVars.success]" doc:name="enrich success var">
+                                                        <flow-ref name="notify-sms" doc:name="notify-sms"/>
+                                                    </enricher>
+                                                </when>
+                                                <otherwise>
+                                                    <logger message="Error: #[flowVars['channel']] is not implemented in the current version. The notification could not be routed through this channel." level="ERROR" doc:name="exception not implemented"/>
+                                                </otherwise>
+                                            </choice>
+                                            <choice doc:name="check notification send result">
+                                                <when expression="#[Boolean.valueOf(flowVars['success']) == true]">
+                                                    <logger message="A notification was successfully processed for partyId: #[flowVars.partyId] using the #[flowVars.channel] channel. " level="INFO" doc:name="info success"/>
+                                                    <enricher source="#[payload]" target="#[flowVars.interactionResult]" doc:name="enrich result">
+                                                        <flow-ref name="post-interaction-log" doc:name="post-interaction-log"/>
+                                                    </enricher>
+                                                    <choice doc:name="check interaction result">
+                                                        <when expression="#[flowVars.interactionResult== &quot;201&quot;]">
+                                                            <logger message="Interaction log successful" level="DEBUG" doc:name="debug interaction log success"/>
+                                                        </when>
+                                                        <otherwise>
+                                                            <logger message="Error: The notification was sent successfully but the interaction log was unsuccessful. This will prevent correlation." level="ERROR" doc:name="error interaction log"/>
+                                                        </otherwise>
+                                                    </choice>
+                                                </when>
+                                                <otherwise>
+                                                    <logger message="Warning: No interaction will be logged for this notification because the send failed." level="WARN" doc:name="warn no interaction"/>
+                                                </otherwise>
+                                            </choice>
+                                            <set-variable variableName="success" value="#[null]" doc:name="reset success"/>
+                                        </foreach>
+                                    </when>
+                                    <otherwise>
+                                        <logger message="No channels could be determined for PartyId: #[flowVars.partyId] . No notification will be sent." level="ERROR" doc:name="error no channels"/>
+                                    </otherwise>
+                                </choice>
+                            </when>
+                            <otherwise>
+                                <logger message="Error: Getting party preference unsuccessful for PartyId: #[flowVars.partyId]. Server returned HTTP #[message.inboundProperties['http.status']]" level="ERROR" doc:name="error party pref"/>
+                            </otherwise>
+                        </choice>
+                    </foreach>
+                </async>
+                <message-properties-transformer mimeType="application/json" doc:name="set status 202">
+                    <add-message-property key="http.status" value="202"/>
+                </message-properties-transformer>
+                <set-payload value="{&quot;result&quot; : &quot;Accepted for asynchronous processing. Please view the Environment System Log or the Audit Log for any asynchronous processing errors. See the Interaction Log to correlate successfully processed notifications.&quot;}" mimeType="application/json" doc:name="202 accepted and end of async processing"/>
+            </when>
+            <otherwise>
+                <logger message="Warning: The service is disabled through configuration. No notifications will be sent." level="WARN" doc:name="warn not enabled"/>
+                <message-properties-transformer doc:name="set status 403">
+                    <add-message-property key="http.status" value="403"/>
+                </message-properties-transformer>
+                <dw:transform-message doc:name="403 exception">
+                    <dw:input-payload doc:sample="exception.example.json"/>
+                    <dw:set-payload><![CDATA[%dw 1.0
+%input payload application/json
+%output application/json skipNullOn="everywhere"
+---
+{
+    "exception": {
+        "correlationId": inboundProperties.api-message-id default sessionVars.MULE_CORRELATION_ID,
+        "exceptionCode":"INTEROP-PROVIDER-CONFIGURED-FORBIDDEN",
+        "httpCode": 403,
+		"timeStamp": now as :datetime {format: "yyyy-MM-dd'T'HH:mm:ssXXX"},
+        "message": "Provider Error - Configured Forbidden Exception",
+        "causes": [
+			{
+				"cause": {
+					"detail": "The service is currently configured to forbid this action through all channels"
+				}
+			}
+		]
+    }
+}]]></dw:set-payload>
+                </dw:transform-message>
+                <byte-array-to-string-transformer doc:name="byte array to string"/>
+            </otherwise>
+        </choice>
+    </flow>
+    <sub-flow name="defaultChannelArray">
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="json to object"/>
+        <foreach collection="#[payload['party']['partyInfo']['partyPref']['communicationList']]" doc:name="foreach communication element">
+            <choice doc:name="check for notification preferences">
+                <when expression="#[payload['communication']['communicationType'] == &quot;notifications&quot; &amp;&amp; payload['communication']['isDefault'] == true]">
+                    <foreach collection="payload.communication.communicationData" doc:name="foreach communicationData element">
+                        <expression-component doc:name="add channel"><![CDATA[java.util.LinkedHashMap cnls = flowVars.channels : java.util.LinkedHashMap;
+cnls.put(payload.communicationValue, payload.communicationChannel);
+flowVars.channels = cnls;]]></expression-component>
+                    </foreach>
+                </when>
+                <otherwise>
+                    <logger message="Searching for notification preference..." level="DEBUG" doc:name="debug not notification pref"/>
+                </otherwise>
+            </choice>
+        </foreach>
+    </sub-flow>
+      <sub-flow name="post-interaction-log">
+        <set-payload value="501" doc:name="set result to exception http 501"/>
+<!--         <set-payload value="{&quot;json&quot; : true}" mimeType="application/json" doc:name="set json payload"/>
+        <dw:transform-message doc:name="interaction log request">
+            <dw:set-payload></dw:set-payload>
+        </dw:transform-message>
+        <byte-array-to-string-transformer doc:name="byte array to string"/>
+        <message-properties-transformer doc:name="set headers">
+            <add-message-property key="Content-Type" value="application/json"/>
+            <add-message-property key="api-message-id" value="#[message:id]"/>
+            <add-message-property key="api-related-id" value="#[message.inboundProperties['api-message-id'] != null ? message.inboundProperties['api-message-id'] : &quot;&quot;]"/>
+            <add-message-property key="api-transaction-id" value="#[message.inboundProperties['api-transaction-id'] != null ? message.inboundProperties['api-transaction-id'] : &quot;&quot;]"/>
+            <add-message-property key="api-transaction-timestamp" value="#[message.inboundProperties['api-transaction-timestamp'] != null ? message.inboundProperties['api-transaction-timestamp'] : &quot;&quot;]"/>
+            <add-message-property key="api-message-timestamp" value="#[server.dateTime.format(&quot;yyyy-MM-dd'T'HH:mm:ssXXX&quot;)]"/>
+            <add-message-property key="api-lang" value="#[message.inboundProperties['api-lang'] != null ? message.inboundProperties['api-lang'] : &quot;&quot;]"/>
+            <add-message-property key="api-country" value="#[message.inboundProperties['api-country'] != null ? message.inboundProperties['api-country'] : &quot;&quot;]"/>
+            <add-message-property key="api-organisation" value="#[message.inboundProperties['api-organisation'] != null ? message.inboundProperties['api-organisation'] : &quot;&quot;]"/>
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Interaction_Configuration" path="${http.interact.post.path}" method="POST" doc:name="post interaction log">
+            <http:success-status-code-validator values="200,201,400..599"/>
+        </http:request>
+        <byte-array-to-string-transformer doc:name="byte array to string"/> -->
+    </sub-flow>
+    <sub-flow name="notify-sms">
+        <choice doc:name="check enabled sms">
+            <when expression="#[Boolean.valueOf('${notifications.sms.enabled}')]">
+                <dw:transform-message doc:name="sms request">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%input payload application/java
+%output application/json skipNullOn="everywhere"
+---
+{
+   "to_addr": flowVars.notificationAddress,
+   "to_addr_type": "msisdn",
+   "content": flowVars.message
+}]]></dw:set-payload>
+                </dw:transform-message>
+                <byte-array-to-string-transformer doc:name="byte array to string"/>
+                <message-properties-transformer doc:name="set headers">
+                    <add-message-property key="Content-Type" value="application/json"/>
+                    <add-message-property key="Authorization" value="${http.sms.headers.authorization}"/>
+                </message-properties-transformer>
+                <logger message="#[payload]" level="DEBUG" doc:name="log payload"/>
+                <http:request config-ref="HTTP_SMS_Configuration1" path="${http.sms.put.path}" method="PUT" doc:name="put sms">
+                    <http:success-status-code-validator values="200,201,400..599"/>
+                </http:request>
+                <logger level="DEBUG" doc:name="log response"/>
+                <byte-array-to-string-transformer doc:name="byte array to string"/>
+                <choice doc:name="check sms send result">
+                    <when expression="#[message.inboundProperties['http.status'] == &quot;200&quot;]">
+                        <set-payload value="true" doc:name="set payload success"/>
+                    </when>
+                    <otherwise>
+                        <logger message="Error: The Short Message Service provider was unsuccessful and the message was not sent. Server returned HTTP #[message.inboundProperties['http.status']]" level="ERROR" doc:name="error sms"/>
+                        <set-payload value="false" doc:name="set payload success false"/>
+                    </otherwise>
+                </choice>
+            </when>
+            <otherwise>
+                <logger message="Warning: The channel is disabled through configuration. No notification will be sent. HTTP 403. Channel: #[flowVars.channel]" level="WARN" doc:name="warn not enabled"/>
+                <set-payload value="false" doc:name="set payload success false"/>
+            </otherwise>
+        </choice>
+    </sub-flow>
+    <sub-flow name="notify-email">
+        <logger message="Error: Channel #[flowVars['channel']] is not implemented in the current version or if channel = default then one or more party default (prefered) channels are not implemented. The notification could not be routed through this channel." level="ERROR" doc:name="exception not implemented"/>
+        <set-payload value="false" doc:name="set payload success false"/>
+    </sub-flow>
+    <sub-flow name="notify-twitter">
+        <logger message="Error: Channel #[flowVars['channel']] is not implemented in the current version or if channel = default then one or more party default (prefered) channels are not implemented. The notification could not be routed through this channel." level="ERROR" doc:name="exception not implemented"/>
+        <set-payload value="false" doc:name="set payload success false"/>
+    </sub-flow>
+    <sub-flow name="notify-facebook">
+        <logger message="Error: Channel #[flowVars['channel']] is not implemented in the current version or if channel = default then one or more party default (prefered) channels are not implemented. The notification could not be routed through this channel." level="ERROR" doc:name="exception not implemented"/>
+        <set-payload value="false" doc:name="set payload success false"/>
+    </sub-flow>
+    <sub-flow name="notify-linkedIn">
+        <logger message="Error: Channel #[flowVars['channel']] is not implemented in the current version or if channel = default then one or more party default (prefered) channels are not implemented. The notification could not be routed through this channel." level="ERROR" doc:name="exception not implemented"/>
+        <set-payload value="false" doc:name="set payload success false"/>
+    </sub-flow>
+    <sub-flow name="notify-apple-push">
+        <logger message="Error: Channel #[flowVars['channel']] is not implemented in the current version or if channel = default then one or more party default (prefered) channels are not implemented. The notification could not be routed through this channel." level="ERROR" doc:name="exception not implemented"/>
+        <set-payload value="false" doc:name="set payload success false"/>
+    </sub-flow>
+</mule>

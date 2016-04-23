@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+    <http:listener-config name="api-httpListenerConfig" host="${api.host.ip}" port="${api.host.port}" doc:name="HTTP Listener Configuration" />
+    <apikit:config name="api-config" raml="api.raml" consoleEnabled="true" consolePath="console" doc:name="Router" />
+
+    <flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="api/${api.version}/*" doc:name="HTTP" />
+        <message-properties-transformer overwrite="true" scope="invocation" doc:name="set-flowVars-perf-START">
+            <add-message-property key="api.STEP_START_TIME_MS" value="#[server.dateTime.toDate().getTime()]" />
+            <add-message-property key="api.STEP_MESSAGE" value="#['api']" />
+        </message-properties-transformer>
+ <choice doc:name="Choice">
+						<when expression="#[payload != null]">
+			       			<byte-array-to-string-transformer ignoreBadInput="true" encoding="UTF-8" mimeType="application/json" doc:name="ByteArray-to-JSON-UTF8-Format"/>
+						</when>
+						<otherwise>
+							<logger message="Skipping converting the payload to a string as it's null. The operation executed does not support submitting a payload (e.g. GET, DELETE, etc.)" level="DEBUG" doc:name="Logger"/>
+						</otherwise>
+					</choice>
+        <set-session-variable variableName="MULE_CORRELATION_ID" value="#[((message.inboundProperties['MULE_CORRELATION_ID'] != null)? message.inboundProperties['MULE_CORRELATION_ID']:message.Id)]" doc:name="set-sessionVar-correlation-Id" />
+        <expression-component doc:name="expression-clear-ssl-properties"><![CDATA[#[System.clearProperty("javax.net.ssl.trustStore"); System.clearProperty("javax.net.ssl.trustStorePassword"); System.clearProperty("javax.net.ssl.trustManagerAlgorithm"); System.clearProperty("javax.net.ssl.trustStoreType");]]]></expression-component>
+        <set-variable variableName="logstage" value="api::START" doc:name="set-flowVar-logStage-Start" />
+        <choice doc:name="Choice">
+            <when expression="#[message.inboundProperties['http.request.uri'] !=null &amp;&amp; !message.inboundProperties['http.request.uri'].contains(&quot;console&quot;) &amp;&amp; message.inboundProperties['http.request.uri'] !=&quot;/api/1.0/&quot;]">
+                <flow-ref name="set-headers-start" doc:name="set-headers-start"/>
+                <flow-ref name="log-SubFlow" doc:name="fr.log-SubFlow.Start"/>
+            </when>
+            <otherwise>
+                <logger level="DEBUG" doc:name="log-debug"/>
+            </otherwise>
+        </choice>
+        <choice doc:name="Choice">
+            <when expression="#[(new String(&quot;options&quot;)).equalsIgnoreCase(message.inboundProperties['http.method'])]">
+                <flow-ref name="process-CORS-response-SubFlow" doc:name="fr.process-CORS-response-SubFlow" />
+            </when>
+            <otherwise>
+                <apikit:router config-ref="api-config" doc:name="APIkit Router" />
+            </otherwise>
+        </choice>
+        <flow-ref name="set-headers-CORS" doc:name="fr.set-headers-CORS" />
+        <set-variable variableName="logstage" value="api::END" doc:name="set-flowVar-logStage-End" />
+        <choice doc:name="Choice">
+			<when expression="#[flowVars['inboundHeaders'] != null]">
+                <flow-ref name="set-headers-end" doc:name="fr.set-headers-end"/>
+                <flow-ref name="log-SubFlow" doc:name="fr.log-SubFlow.End"/>
+            </when>
+            <otherwise>
+                <logger level="DEBUG" doc:name="log-debug"/>
+            </otherwise>
+        </choice>
+
+        <logger message="#['Output Logger for : '+flowVars['api.STEP_MESSAGE']+' id['+sessionVars['MULE_CORRELATION_ID'] +'] startDate['+ new java.util.Date(flowVars['api.STEP_START_TIME_MS']) + '] start['+flowVars['api.STEP_START_TIME_MS']+'] time['+(server.dateTime.toDate().getTime() - flowVars['api.STEP_START_TIME_MS'])+']'] tag[#[flowVars['api.STEP_MESSAGE']]]" level="DEBUG" doc:name="log-perf-End" />
+         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" />
+    </flow>
+    <sub-flow name="process-CORS-response-SubFlow">
+        <logger message="process_CORS_response_SubFlow::Start - Incoming requests is a CORS Preflight handshake!" level="DEBUG" doc:name="log_START" />
+        <set-property propertyName="Content-Type" value="application/json" doc:name="set_property_Content-Type" />
+        <set-property propertyName="http.status" value="200" doc:name="set_property_http_status" />
+        <logger message="process_CORS_response_SubFlow::End - Incoming requests is a CORS Preflight handshake!" level="DEBUG" doc:name="log_END" />
+    </sub-flow>
+    <sub-flow name="log-SubFlow">
+        <async doc:name="Async">
+            <flow-ref name="post-auditlog" doc:name="fr.post-auditlog"/>
+            <logger message="#[flowVars['logstage']] -- Message ID : #[sessionVars['MULE_CORRELATION_ID']] -- message:: #[message] -- payload:: #[payload]" level="INFO" doc:name="logPayload" />
+        </async>
+    </sub-flow>
+    <flow name="get:/ping:api-config">
+        <flow-ref name="get-ping-SubFlow" doc:name="fr.get-ping.get-ping-SubFlow" />
+    </flow>
+    <flow name="post:/notify:application/json:api-config">
+    	<set-variable variableName="fVarOauthScope" value="${post.notify.oauth.scopes}" doc:name="fVarOauthScope" />
+    	<flow-ref name="preProcessingSubFlow" doc:name="fr.preProcessingSubFlow" />
+        <flow-ref name="post-notifyFlow" doc:name="post-notifyFlow"/>
+    </flow>
+
+
+</mule>

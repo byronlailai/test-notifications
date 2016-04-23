@@ -1,0 +1,150 @@
+<testsuite name="test-post-notify" time="1.19" failures="0" errors="0" skipped="0" tests="1">
+  <properties>
+    <property key="file.encoding.pkg" value="sun.io"/>
+    <property key="exceptionCode-IllegalArgumentException" value="INT-TECH-ILLEGALARGUMENTEXCEPTION"/>
+    <property key="exceptionCode-ValidationException" value="INT-TECH-VALIDATIONEXCEPTION"/>
+    <property key="oauth.cache.maxEntries" value="1"/>
+    <property key="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre"/>
+    <property key="http.interact.post.path" value="logs"/>
+    <property key="api.build" value="local"/>
+    <property key="notifications.facebook.enabled" value="false"/>
+    <property key="classworlds.conf" value="/usr/local/Cellar/maven/3.3.9/libexec/bin/m2.conf"/>
+    <property key="http.sms.timeout" value="40000"/>
+    <property key="oauth.cache.ttl" value="30000"/>
+    <property key="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/endorsed"/>
+    <property key="http.auditlog.username" value="mule_user"/>
+    <property key="http.interact.timeout.connection" value="30000"/>
+    <property key="api.version" value="1.0"/>
+    <property key="sun.os.patch.level" value="unknown"/>
+    <property key="api.name" value="local-bvb-api-notification"/>
+    <property key="java.vendor.url" value="http://java.oracle.com/"/>
+    <property key="exceptionCode-Other" value="INT-TECH-UNKNOWNEXCEPTION"/>
+    <property key="exceptionCode-MissingTokenException" value="INT-TECH-MISSINGTOKENEXCEPTION"/>
+    <property key="java.version" value="1.8.0_77"/>
+    <property key="mule.encoding" value="UTF-8"/>
+    <property key="notifications.applePush.enabled" value="false"/>
+    <property key="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property key="http.oauth2v2.validate.path" value="validate"/>
+    <property key="notifications.twitter.enabled" value="false"/>
+    <property key="user.name" value="byronlai"/>
+    <property key="api.access_control.allow_methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
+    <property key="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property key="http.party.host" value="bvbdev1app1-api-party.elasticbeanstalk.com"/>
+    <property key="sun.jnu.encoding" value="UTF-8"/>
+    <property key="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property key="http.oauth2v2.port" value="80"/>
+    <property key="enable.oauth.token.validation" value="true"/>
+    <property key="java.specification.name" value="Java Platform API Specification"/>
+    <property key="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property key="user.timezone" value="America/Los_Angeles"/>
+    <property key="path.separator" value=":"/>
+    <property key="api.format.date" value="yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSXXX"/>
+    <property key="exceptionCode-InvalidTokenException" value="INT-TECH-INVALIDTOKENEXCEPTION"/>
+    <property key="file.encoding" value="UTF-8"/>
+    <property key="enable.oauth.token.generation" value="true"/>
+    <property key="http.oauth2v2.timeout.connection" value="30000"/>
+    <property key="post.sampleresource.fortesting.oauth.scopes" value="SAMPLE-SCOPE-1,SAMPLE-SCOPE-2"/>
+    <property key="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -B clean package"/>
+    <property key="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property key="exceptionCode-ConnectionException" value="INT-TECH-CONNECTIONEXCEPTION"/>
+    <property key="http.party.timeout.connection" value="30000"/>
+    <property key="oauth.cache.entryTTL" value="7200000"/>
+    <property key="java.io.tmpdir" value="/var/folders/dp/bmx0ll_d0kq55n56mlwsy7j80000gn/T/"/>
+    <property key="http.sms.timeout.connection" value="40000"/>
+    <property key="user.language" value="en"/>
+    <property key="line.separator" value="&#xa;"/>
+    <property key="log4j.configurationFile" value="/Users/byronlai/Barclay/bvb-api-notifications/target/test-classes/log4j2-test.xml"/>
+    <property key="notifications.email.enabled" value="false"/>
+    <property key="java.vm.info" value="mixed mode"/>
+    <property key="api.host.ip" value="127.0.0.1"/>
+    <property key="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property key="http.oauth2v2.host" value="bvbdev1app1-api-oauthb.elasticbeanstalk.com"/>
+    <property key="http.party.timeout" value="30000"/>
+    <property key="oauth.verification.cache.expirationInterval" value="600000"/>
+    <property key="guice.disable.misplaced.annotation.check" value="true"/>
+    <property key="exceptionCode-BadRequestException" value="INT-TECH-BADREQUESTEXCEPTION"/>
+    <property key="notifications.linkedIn.enabled" value="false"/>
+    <property key="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property key="http.interact.base.path" value="api/1.0"/>
+    <property key="api.host.port" value="8081"/>
+    <property key="http.sms.base.path" value="api/v1/go/http_api_nostream"/>
+    <property key="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
+    <property key="oauth.verification.cache.entryTTL" value="3600000"/>
+    <property key="exceptionCode-IOException" value="INT-TECH-IOEXCEPTION"/>
+    <property key="gopherProxySet" value="false"/>
+    <property key="http.exception.path" value="api/1.0/exceptions"/>
+    <property key="http.exception.port" value="80"/>
+    <property key="notifications.master.enabled" value="true"/>
+    <property key="os.name" value="Mac OS X"/>
+    <property key="java.specification.vendor" value="Oracle Corporation"/>
+    <property key="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property key="java.library.path" value="/Users/byronlai/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property key="mule.testingMode" value="true"/>
+    <property key="java.class.version" value="52.0"/>
+    <property key="maven.multiModuleProjectDirectory" value="/Users/byronlai/Barclay/bvb-api-notifications"/>
+    <property key="http.oauth2v2.token.path" value="token"/>
+    <property key="http.auditlog.path" value="api/1.0/auditlogs"/>
+    <property key="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib"/>
+    <property key="http.auditlog.port" value="80"/>
+    <property key="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property key="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property key="oauth.cache.expirationInterval" value="600000"/>
+    <property key="http.sms.put.path" value="4e7a9bda17444595b088c3e331fb5415/messages.json"/>
+    <property key="http.sms.tls.truststore.password" value="bvb1234!"/>
+    <property key="http.auditlog.logLevel" value="info"/>
+    <property key="http.exception.host" value="bvbdev1app1-api-except.elasticbeanstalk.com"/>
+    <property key="oauth.verification.cache.maxEntries" value="1000000"/>
+    <property key="java.vm.specification.version" value="1.8"/>
+    <property key="post.notify.oauth.scopes" value="POST-NOTIFY"/>
+    <property key="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property key="exceptionCode-InvalidCredentialsException" value="INT-TECH-INVALIDCREDENTIALSEXCEPTION"/>
+    <property key="sun.cpu.isalist" value=""/>
+    <property key="java.ext.dirs" value="/Users/byronlai/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property key="exceptionCode-SQLException" value="INT-TECH-SQLEXCEPTION"/>
+    <property key="os.version" value="10.11.4"/>
+    <property key="http.interact.port" value="80"/>
+    <property key="http.auditlog.timeout" value="240000"/>
+    <property key="exceptionCode-MissingScopesException" value="INT-TECH-MISSINGSCOPESEXCEPTION"/>
+    <property key="oauth.client_id" value="notify_api"/>
+    <property key="user.home" value="/Users/byronlai"/>
+    <property key="exceptionCode-InsufficientPermissionsException" value="INT-TECH-INSUFFICIENTPERMISSIONSEXCEPTION"/>
+    <property key="java.vm.vendor" value="Oracle Corporation"/>
+    <property key="http.sms.headers.authorization" value="Basic NGY3MDI4NjBiMTA1NDMzNzk0ZWVkNTRmOGI0NDFiNDc6YnZiX2Rldg=="/>
+    <property key="exceptionCode-UnknownHostException" value="INT-TECH-UNKNOWNHOSTEXCEPTION"/>
+    <property key="maven.wagon.http.ssl.allowall" value="true"/>
+    <property key="user.dir" value="/Users/byronlai/Barclay/bvb-api-notifications"/>
+    <property key="http.sms.port" value="443"/>
+    <property key="oauth.client_secret" value="bvb1234!"/>
+    <property key="sun.cpu.endian" value="little"/>
+    <property key="maven.wagon.http.ssl.insecure" value="true"/>
+    <property key="http.exception.timeout" value="120000"/>
+    <property key="http.auditlog.host" value="bvbdev1app1-api-audit.elasticbeanstalk.com"/>
+    <property key="http.oauth2v2.timeout" value="30000"/>
+    <property key="java.vm.version" value="25.77-b03"/>
+    <property key="java.class.path" value="/usr/local/Cellar/maven/3.3.9/libexec/boot/plexus-classworlds-2.5.2.jar"/>
+    <property key="os.arch" value="x86_64"/>
+    <property key="notifications.sms.enabled" value="true"/>
+    <property key="sun.java.launcher" value="SUN_STANDARD"/>
+    <property key="http.party.pref.get.path" value="parties/{partyId}/partypref"/>
+    <property key="http.party.base.path" value="api/1.0"/>
+    <property key="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property key="quartz.oauth.cron.expression" value="0 5 0/2 * * ?"/>
+    <property key="http.interact.timeout" value="30000"/>
+    <property key="maven.wagon.http.ssl.ignore.validity.dates" value="true"/>
+    <property key="file.separator" value="/"/>
+    <property key="java.runtime.version" value="1.8.0_77-b03"/>
+    <property key="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/jre/classes"/>
+    <property key="http.sms.tls.truststore.path" value="truststores/keystore.jks"/>
+    <property key="http.interact.host" value="bvbdev1app1-api-interac.elasticbeanstalk.com"/>
+    <property key="oauth.client.scope" value="GET-PARTY-PARTYPREF POST-AUDITLOG"/>
+    <property key="user.country" value="US"/>
+    <property key="maven.home" value="/usr/local/Cellar/maven/3.3.9/libexec"/>
+    <property key="http.oauth2v2.base.path" value="api/1.0"/>
+    <property key="java.vendor" value="Oracle Corporation"/>
+    <property key="http.sms.host" value="go.vumi.org"/>
+    <property key="java.specification.version" value="1.8"/>
+    <property key="sun.arch.data.model" value="64"/>
+    <property key="http.party.port" value="80"/>
+  </properties>
+  <testcase time="1.19" name="test-post-notify-sms-202" classname="test-post-notify"/>
+</testsuite>

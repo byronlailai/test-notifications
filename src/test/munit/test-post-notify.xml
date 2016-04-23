@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+<!--     <munit:config name="munit" doc:name="MUnit configuration"/> -->
+	<munit:config doc:name="Munit configuration" mock-connectors="false" mock-inbounds="false"/>	
+    
+    <!-- Import mule flows -->
+    <spring:beans>
+    	<spring:import resource="classpath:config.xml"/>
+    	<spring:import resource="classpath:get-party.xml"/>
+    	<spring:import resource="classpath:post-notify.xml"/>
+    	<spring:import resource="classpath:bvb-mule-lib-config.xml" />
+    	<spring:import resource="classpath:bvb-mule-lib-config-headers.xml"/>
+    	<spring:import resource="classpath:bvb-mule-lib-exceptions.xml"/>
+    </spring:beans>
+    
+    <!-- Import property files -->
+    <context:property-placeholder location="classpath:mule-app.properties" />
+    
+    <munit:before-test name="setup-process" description="Before tests actions">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-session-variable variableName="inboundHeaders"><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	api-headers: {
+		api-country: "en",
+		api-lang: "en",
+		api-transaction-id: "fb1c52f5-88af-2ba1-aed7-0d75352fb8dc",
+		api-cache-key: "c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a",
+		api-organisation: "bvb",
+		api-transaction-timestamp: "2016-11-25T08:20:32.456+01:00" as :datetime {format: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"},
+		api-message-id: "b23u1e6s-e32k-34a1-aed7-0d75354gh1dc"
+	}
+}]]></dw:set-session-variable>
+            <dw:set-session-variable variableName="OauthToken"><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	token_type: "Bearer",
+	access_token: "xQQ+pO+aGi1fsJBoggbvRhwb8c1s8Kfsdfsf1ISQcB5acqC/O1snK+XCJ5f5fA+sDtXhdYlwGNGhyr0+EyXJgwJUtUhUA6laWTHPXTpthBTvISoYACU9qRjOQD8+PoTTTjlLetUTiMRy3PUNMHkQJrryUB84ybtl+yDsDFTsSm0V8LrLoEgtRyLWUsrb/WH+c"
+}]]></dw:set-session-variable>
+        </dw:transform-message>
+    </munit:before-test>
+    
+    <munit:test name="test-post-notify-sms-202" description="Test">
+        <mock:when doc:name="Mock-http-invoke-party-get-200" messageProcessor=".*:.*">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['get party preferences']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="{&quot;party&quot;: {&quot;partyId&quot;: &quot;471bd1f7-19f9-4db8-a291-45904155c356&quot;, &quot;partyPref&quot;: {&quot;language&quot;: {&quot;languageCode&quot;: &quot;EN&quot;}, &quot;currency&quot;: {&quot;curCode&quot;: &quot;ZAR&quot;, &quot;curCodeDesc&quot;: &quot;South African Rand&quot;}, &quot;communicationList&quot;: [{&quot;communication&quot;: {&quot;communicationType&quot;: &quot;marketing&quot;, &quot;communicationData&quot;: [{&quot;communicationChannel&quot;: &quot;sms&quot;, &quot;communicationCategory&quot;: &quot;personal&quot;, &quot;communicationValue&quot;: &quot;0724635362&quot;}, {&quot;communicationChannel&quot;: &quot;email&quot;, &quot;communicationCategory&quot;: &quot;home&quot;, &quot;communicationValue&quot;: &quot;joe.soap@work.com&quot;} ], &quot;isDefault&quot;: false } }, {&quot;communication&quot;: {&quot;communicationType&quot;: &quot;notifications&quot;, &quot;communicationData&quot;: [{&quot;communicationChannel&quot;: &quot;sms&quot;, &quot;communicationCategory&quot;: &quot;work&quot;, &quot;communicationValue&quot;: &quot;0724635362&quot;}, {&quot;communicationChannel&quot;: &quot;email&quot;, &quot;communicationCategory&quot;: &quot;work&quot;, &quot;communicationValue&quot;: &quot;joe.soap@work.com&quot;} ], &quot;isDefault&quot;: false } } ] }, &quot;status&quot;: [] } }">
+                <mock:inbound-properties>
+                    <mock:inbound-property key="http.status" value="200"/>
+                    <mock:inbound-property key="Content-Type" value="application/json"/>
+                </mock:inbound-properties>
+            </mock:then-return>
+        </mock:when>
+        <mock:when messageProcessor=".*:.*" doc:name="Mock-http-invoke-interaction-post-201">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['post interaction log']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="{&quot;success&quot; : true}">
+                <mock:inbound-properties>
+                    <mock:inbound-property key="http.status" value="201"/>
+                    <mock:inbound-property key="Content-Type" value="application/json"/>
+                </mock:inbound-properties>
+            </mock:then-return>
+        </mock:when>
+        <mock:when messageProcessor=".*:.*" doc:name="Mock-http-invoke-sms-put-200">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['put sms']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="{&quot;success&quot;:true}">
+                <mock:inbound-properties>
+                    <mock:inbound-property key="http.status" value="201"/>
+                    <mock:inbound-property key="Content-Type" value="application/json"/>
+                </mock:inbound-properties>
+            </mock:then-return>
+        </mock:when>
+        <choice doc:name="Choice">
+            <when expression="#[Boolean.valueOf('${notifications.master.enabled}')]">
+                <munit:set payload="#[getResource('./sample_data/post-notify-request.example.json').asString()]" doc:name="Set Message"/>
+                <logger message="payload: #[payload], message = #[message]" level="WARN" doc:name="test-post-notify-sms-202::START"/>
+                <flow-ref name="post-notifyFlow" doc:name="post-notifyFlow"/>
+                <logger message="#[message.outboundProperties['http.status']]" level="INFO" doc:name="Logger"/>
+                <munit:assert-on-equals message="Outbound HTTP Status Code Match Failure" expectedValue="#[message.outboundProperties['http.status']]" actualValue="202" doc:name="Assert Equals - http.status"/>
+                <logger message="payload: #[payload], message = #[message]" level="WARN" doc:name="test-post-notify-sms-202::END"/>
+            </when>
+            <otherwise>
+                <munit:assert-true message="Not HTTP 202" condition="#[message.outboundProperties['http.status'] != '202']" doc:name="Assert True"/>
+            </otherwise>
+        </choice>
+    </munit:test>
+
+</mule>

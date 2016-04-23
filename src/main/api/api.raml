@@ -1,0 +1,55 @@
+#%RAML 0.8
+#
+# --= Change Log =--
+# VERSION 1.0:
+# 2015-09-15 - J. Krige - Initial Version from RAML Accelerator Template 
+title: bvb-api-notification
+version: 1.0
+protocols: [ HTTP, HTTPS ]
+#baseUri: http://localhost:8081/api/1.0
+baseUri: http://mocksvc.mulesoft.com/mocks/9ef01b01-c38d-4c03-b64e-a8da827202b3/api/1.0
+mediaType: application/json
+traits:
+  - dateRange: !include traits/dateRange.yaml
+  - pageeable: !include traits/pageable.yaml
+  - sortable: !include traits/sortable.yaml
+
+resourceTypes:
+  - collection-read-only: !include resourceTypes/collection-read-only.yaml
+  - collection: !include resourceTypes/collection.yaml
+  - collection-write-only: !include resourceTypes/collection-write-only.yaml
+  - item-read-only: !include resourceTypes/item-read-only.yaml
+  - item: !include resourceTypes/item.yaml
+  - item-allow-delete: !include resourceTypes/item-allow-delete.yaml
+  - item-write-only: !include resourceTypes/item-write-only.yaml
+  - item-update-only: !include resourceTypes/item-update-only.yaml
+  - item-process: !include resourceTypes/item-process.yaml
+  - collection-write-only-accept: !include resourceTypes/collection-write-only-accept.yaml
+  - init-write-only: !include resourceTypes/init-write-only.yaml
+  
+#<Communication>
+/ping:
+  description: Service used to test connectivity.
+  type: 
+    item-read-only:
+      defined-description: Retrieves a single ping response.
+      defined-get-description: Retrieves a single ping response.
+      defined-get-response-schema: !include schemas/ping/get-ping-response.schema.json
+      defined-get-response-example: !include examples/ping/get-ping-response.example.json
+      defined-get-exception-schema: !include schemas/exception/exception.schema.json
+      defined-get-exception-example: !include examples/exception/exception.example.json
+#</Communication>
+#<Notify>
+/notify:
+  description: Asynchronously send a notification and persist the notification to the datastore.
+  type:
+    collection-write-only-accept:
+      defined-description:
+      defined-post-description: Processes a collection of notification messages.
+      defined-post-request-schema: !include schemas/notify/post-notificationMessages-request.schema.json
+      defined-post-request-example: !include examples/notify/post-notificationMessages-request.example.json
+      defined-post-response-schema: !include schemas/notify/post-notificationMessages-response.schema.json
+      defined-post-response-example: !include examples/notify/post-notificationMessages-response.example.json
+      defined-post-exception-schema: !include schemas/exception/exception.schema.json
+      defined-post-exception-example: !include examples/exception/exception.example.json
+#</Notify>

@@ -1,0 +1,62 @@
+description: Defines a collection of objects. <<defined-description>>
+post:
+  description: Process collection of <<resourcePathName>> record. <<defined-post-description>>
+  headers: !include common/headers.yaml
+  body:
+    application/json:
+      schema: |
+        <<defined-post-request-schema>>
+      example: |
+        <<defined-post-request-example>>
+  responses:
+    202:
+      description: | 
+        The request has been accepted for asynchronous processing.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-response-schema>>
+          example: |
+            <<defined-post-response-example>>
+    
+    400:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>
+    403:
+      description: |
+        A web server may return this status code in response to a request from a client for a web page or resource to indicate that the server can be reached and understood the request, but refuses to take any further action. Status code 403 responses are the result of the web server being configured to deny access, for some reason, to the requested resource by the client. 
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>
+    404:
+      description: | 
+        The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>
+    500:
+      description: | 
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-post-exception-schema>>
+          example: |
+            <<defined-post-exception-example>>

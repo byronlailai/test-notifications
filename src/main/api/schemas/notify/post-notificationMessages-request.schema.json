@@ -1,0 +1,47 @@
+{
+    "$schema" : "http://json-schema.org/draft-04/schema#",
+    "title" : "notificationRequest",
+    "description" : "Defines a collection of BVB notification request messages",
+    "definitions": {
+       "senderPartyIdType": { 
+       	"description" : "The party identifier of the sender of the notification. Optional.",
+       	"type" : "string" 
+       	},
+        "recipientPartyIdType": { 
+        "description" : "The party identifier of the recipient of the notification",
+        "type" : "string" 
+        },
+       "channelType": { 
+       	"description" : "The channel to send the message through. Set as 'default' to use the party's preferred channel",
+       	"type" : "string",
+       	"enum" : ["default", "email", "sms", "twitter", "linkedIn", "facebook", "applePush"]
+       	},
+       "messageType": { 
+       	"description" : "The message to send",
+       	"type" : "string" 
+       	},
+       "messagesType" : {
+            "type": "object",
+            "properties": {
+                "senderPartyId": { "$ref": "#/definitions/senderPartyIdType" },
+                "recipientPartyId": { "$ref": "#/definitions/recipientPartyIdType" },
+                "channel": { "$ref": "#/definitions/channelType" },
+                "message": { "$ref": "#/definitions/messageType" }
+              },
+              "additionalProperties" : false,
+              "required" : ["recipientPartyId", "channel", "message"]
+            }
+      },
+    "type": "object",
+    "properties": {
+        "messages": { 
+          "type" : "array",
+          "properties" : {
+                  "object" : { "$ref": "#/definitions/messagesType" }
+          },
+          "minItems": 1,
+          "maxItems": 250,
+          "uniqueItems": true
+        }
+    }
+}

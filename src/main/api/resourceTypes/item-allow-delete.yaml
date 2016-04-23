@@ -1,0 +1,154 @@
+#
+# --= Change Log =--
+# VERSION 1.0:
+# 2015-08-24 - mdebarros - initial version created
+# 2015-08-25 - mdebarros - first draft
+# 2015-08-26 - mdebarros - added meta-data to headers & fixed date-time regex for the headers
+# 2015-09-17 - mdebarros - added api-organisation identifier to headers as required
+# 2015-10-30 - mdebarros - removed the body request from all delete operations
+# 2015-10-30 - mdebarros - added a item-update-only
+# 2015-11-04 - mdebarros - Updated dateTime regex for headers
+# 2015-11-04 - mdebarros - Added the !!str in front of dateTime example strings as YAML spec parses dates automatically
+# 2015-11-06 - mdebarros - Update Post operations error code from 404 to 409
+# 2016-02-04 - mdebarros - Split resourceTypes into seperate files
+# 2016-02-04 - mdebarros - Added common header include
+#
+description: Defines an individual item retrieve from a collection. <<defined-description>>
+get:
+  description: Returns a single <<resourcePathName|!singularize>>. <<defined-get-description>>
+  headers: !include common/headers.yaml
+  responses:
+    200:
+      description: |
+        Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request, the response will contain an entity describing or containing the result of the action.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-get-response-schema>>
+          example: |
+            <<defined-get-response-example>>
+    400:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-get-exception-schema>>
+          example: |
+            <<defined-get-exception-example>>
+    404:
+      description: |
+        The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-get-exception-schema>>
+          example: |
+            <<defined-get-exception-example>>
+    500:
+      description: |
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-get-exception-schema>>
+          example: |
+            <<defined-get-exception-example>>
+put:
+  description: Update a <<resourcePathName|!singularize>> record. <<defined-put-description>>
+  headers: !include common/headers.yaml
+  body:
+    application/json:
+      schema: |
+        <<defined-put-request-schema>>
+      example: |
+        <<defined-put-request-example>>
+  responses:
+    200:
+      description: |
+        Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request, the response will contain an entity describing or containing the result of the action.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-put-response-schema>>
+          example: |
+            <<defined-put-response-example>>
+    400:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-put-exception-schema>>
+          example: |
+            <<defined-put-exception-example>>
+    404:
+      description: |
+        The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-put-exception-schema>>
+          example: |
+            <<defined-put-exception-example>>
+    500:
+      description: |
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-put-exception-schema>>
+          example: |
+            <<defined-put-exception-example>>
+delete:
+  description: Delete a <<resourcePathName|!singularize>> record. <<defined-delete-description>>
+  headers: !include common/headers.yaml
+  responses:
+    200:
+      description: |
+        Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request, the response will contain an entity describing or containing the result of the action.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-delete-response-schema>>
+          example: |
+            <<defined-delete-response-example>>
+    400:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-delete-exception-schema>>
+          example: |
+            <<defined-delete-exception-example>>
+    404:
+      description: |
+        The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-delete-exception-schema>>
+          example: |
+            <<defined-delete-exception-example>>
+    500:
+      description: |
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      headers: !include common/headers.yaml
+      body:
+        application/json:
+          schema: |
+            <<defined-delete-exception-schema>>
+          example: |
+            <<defined-delete-exception-example>>
