@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.bvb.api</groupId>
-	<artifactId>bvb-api-notifications</artifactId>
+	<groupId>com.abc</groupId>
+	<artifactId>notifications</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>mule</packaging>
-	<name>Mule bvb-api-notification-v1.0 Application</name>
+	<name>Mule notification-v1.0 Application</name>
 
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
