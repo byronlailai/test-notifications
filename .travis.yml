@@ -1,0 +1,24 @@
+language: java
+
+notifications:
+  email:
+    - byronlai@yahoo.com
+    
+jdk:
+  - openjdk7
+  
+cache:
+  directories:
+    - $HOME/.m2/repository
+
+before_install:
+  - mv settings.xml $HOME/.m2/settings.xml
+  - ls -a $HOME/.m2/settings.xml
+
+before_script: 
+  - echo TRAVIS_BUILD_NUMBER= $TRAVIS_BUILD_NUMBER
+  - echo BUILD_INFO= $BUILD_INFO
+  - echo DEPL_ENV= $DEPL_ENV
+  
+script: 
+  - mvn -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true 
